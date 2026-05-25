@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.database import SessionLocal
+from app.core.database import get_db
 from app.modules.rutas.schemas.linea import LineaDetalleResponse, LineaListResponse
 from app.modules.rutas.services.linea_service import (
     get_all_lineas,
@@ -10,13 +10,6 @@ from app.modules.rutas.services.linea_service import (
 )
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("", response_model=list[LineaListResponse])
