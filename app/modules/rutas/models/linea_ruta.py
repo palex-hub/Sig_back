@@ -1,7 +1,7 @@
 from sqlalchemy import Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.core.database import Base
 
 
 class LineaRuta(Base):

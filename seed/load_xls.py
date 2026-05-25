@@ -7,7 +7,7 @@ import xlrd
 from sqlalchemy import select
 
 from app.core.database import SessionLocal, engine
-from app.db.base import Base
+from app.core.database import Base
 from app.modules.rutas.models import Color, Linea, LineaPunto, LineaRuta, Punto, Ruta
 
 XLS_PATH = Path(__file__).resolve().parent.parent / "DatosLineas.xls"
