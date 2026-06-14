@@ -4,5 +4,6 @@ from app.modules.rutas.models.ruta import Ruta
 from app.modules.rutas.models.linea_ruta import LineaRuta
 from app.modules.rutas.models.punto import Punto
 from app.modules.rutas.models.linea_punto import LineaPunto
+from app.modules.rutas.models.trasbordo import Trasbordo
 
-__all__ = ["Color", "Linea", "Ruta", "LineaRuta", "Punto", "LineaPunto"]
+__all__ = ["Color", "Linea", "Ruta", "LineaRuta", "Punto", "LineaPunto", "Trasbordo"]

@@ -3,18 +3,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import xlrd
+import openpyxl
 from sqlalchemy import select
 
 from app.core.database import SessionLocal, engine
 from app.core.database import Base
-from app.modules.rutas.models import Color, Linea, LineaPunto, LineaRuta, Punto, Ruta
+from app.modules.rutas.models import Color, Linea, LineaPunto, LineaRuta, Punto, Ruta, Trasbordo
 
-XLS_PATH = Path(__file__).resolve().parent.parent / "DatosLineas.xls"
+XLS_PATH = Path(__file__).resolve().parent.parent / "DatosLineas.xlsx"
 
 
 def read_xls():
-    wb = xlrd.open_workbook(str(XLS_PATH))
+    wb = openpyxl.load_workbook(str(XLS_PATH), data_only=True)
     return wb
 
 
@@ -25,15 +25,15 @@ def recreate_tables():
 
 
 def seed_colores(wb, db):
-    sheet = wb.sheet_by_name("Lineas")
-    colores_vistos: dict[str, tuple[str, str]] = {}
-    for row in range(1, sheet.nrows):
-        cod_hex = sheet.cell(row, 2).value.strip()
+    sheet = wb["Lineas"]
+    colores_vistos: dict[str, str] = {}
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        cod_hex = str(row[2]).strip()
         if cod_hex not in colores_vistos:
-            colores_vistos[cod_hex] = (cod_hex, cod_hex)
+            colores_vistos[cod_hex] = cod_hex
 
-    for cod_hex, (nombre, _) in colores_vistos.items():
-        color = Color(nombre=nombre, cod_hex=cod_hex)
+    for cod_hex in colores_vistos:
+        color = Color(nombre=cod_hex, cod_hex=cod_hex)
         db.add(color)
     db.commit()
 
@@ -42,17 +42,20 @@ def seed_colores(wb, db):
 
 
 def seed_puntos(wb, db):
-    sheet = wb.sheet_by_name("Puntos")
-    for row in range(1, sheet.nrows):
+    sheet = wb["Puntos"]
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        stop_val = str(row[4]).strip().upper() if row[4] is not None else "N"
         punto = Punto(
-            id=int(sheet.cell(row, 0).value),
-            latitud=sheet.cell(row, 1).value,
-            longitud=sheet.cell(row, 2).value,
-            descripcion=sheet.cell(row, 3).value.strip(),
+            id=int(row[0]),
+            latitud=row[1],
+            longitud=row[2],
+            descripcion=str(row[3]).strip(),
+            stop=(stop_val == "S"),
         )
         db.add(punto)
     db.commit()
-    print(f"Puntos insertados: {sheet.nrows - 1}")
+    total = sheet.max_row - 1
+    print(f"Puntos insertados: {total}")
 
 
 def seed_rutas(db):
@@ -64,53 +67,53 @@ def seed_rutas(db):
 
 
 def seed_lineas(wb, db, color_map):
-    sheet = wb.sheet_by_name("Lineas")
-    for row in range(1, sheet.nrows):
-        cod_hex = sheet.cell(row, 2).value.strip()
-        fecha_excel = sheet.cell(row, 4).value
-        fecha = xlrd.xldate_as_datetime(fecha_excel, wb.datemode)
+    sheet = wb["Lineas"]
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        cod_hex = str(row[2]).strip()
         linea = Linea(
-            id=int(sheet.cell(row, 0).value),
-            nombre=sheet.cell(row, 1).value.strip(),
-            imagen_url=sheet.cell(row, 3).value.strip(),
-            fecha_creada=fecha,
+            id=int(row[0]),
+            nombre=str(row[1]).strip(),
+            imagen_url=str(row[3]).strip() if row[3] else None,
+            fecha_creada=row[4],
             color_id=color_map[cod_hex],
         )
         db.add(linea)
     db.commit()
-    print(f"Líneas insertadas: {sheet.nrows - 1}")
+    total = sheet.max_row - 1
+    print(f"Líneas insertadas: {total}")
 
 
 def seed_lineas_rutas(wb, db):
-    sheet = wb.sheet_by_name("LineaRuta")
-    for row in range(1, sheet.nrows):
+    sheet = wb["LineaRuta"]
+    for row in sheet.iter_rows(min_row=2, values_only=True):
         lr = LineaRuta(
-            id=int(sheet.cell(row, 0).value),
-            linea_id=int(sheet.cell(row, 1).value),
-            ruta_id=int(sheet.cell(row, 2).value),
-            distancia=sheet.cell(row, 4).value,
-            tiempo=sheet.cell(row, 5).value,
+            id=int(row[0]),
+            linea_id=int(row[1]),
+            ruta_id=int(row[2]),
+            descripcion=str(row[3]).strip() if row[3] else None,
+            distancia=float(row[4]) if row[4] is not None else 0.0,
+            tiempo=float(row[5]) if row[5] is not None else 0.0,
         )
         db.add(lr)
     db.commit()
-    print(f"LineaRuta insertadas: {sheet.nrows - 1}")
+    total = sheet.max_row - 1
+    print(f"LineaRuta insertadas: {total}")
 
 
 def seed_lineas_puntos(wb, db):
-    sheet = wb.sheet_by_name("LineasPuntos")
+    sheet = wb["LineasPuntos"]
     batch = []
     BATCH_SIZE = 200
     total = 0
-    for row in range(1, sheet.nrows):
+    for row in sheet.iter_rows(min_row=2, values_only=True):
         lp = LineaPunto(
-            id=int(sheet.cell(row, 0).value),
-            linea_ruta_id=int(sheet.cell(row, 1).value),
-            punto_id=int(sheet.cell(row, 2).value),
-            orden=int(sheet.cell(row, 3).value),
-            latitud=sheet.cell(row, 4).value,
-            longitud=sheet.cell(row, 5).value,
-            distancia=sheet.cell(row, 6).value,
-            tiempo=sheet.cell(row, 7).value,
+            id=int(row[0]),
+            linea_ruta_id=int(row[1]),
+            punto_id=int(row[2]),
+            punto_destino_id=int(row[3]) if row[3] is not None else None,
+            orden=int(row[4]),
+            distancia=float(row[5]) if row[5] is not None else 0.0,
+            tiempo=float(row[6]) if row[6] is not None else 0.0,
         )
         batch.append(lp)
         if len(batch) >= BATCH_SIZE:
@@ -125,6 +128,22 @@ def seed_lineas_puntos(wb, db):
     print(f"LineasPuntos insertados: {total}")
 
 
+def seed_trasbordos(wb, db):
+    sheet = wb["PuntosTrasbordos"]
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        trasbordo = Trasbordo(
+            id=int(row[0]),
+            punto_id=int(row[1]),
+            linea_origen_id=int(row[2]),
+            linea_destino_id=int(row[3]),
+            penalizacion_min=float(row[4]),
+        )
+        db.add(trasbordo)
+    db.commit()
+    total = sheet.max_row - 1
+    print(f"Trasbordos insertados: {total}")
+
+
 def main():
     wb = read_xls()
     recreate_tables()
@@ -136,6 +155,7 @@ def main():
         seed_lineas(wb, db, color_map)
         seed_lineas_rutas(wb, db)
         seed_lineas_puntos(wb, db)
+        seed_trasbordos(wb, db)
 
     print("¡Seed completado exitosamente!")
 

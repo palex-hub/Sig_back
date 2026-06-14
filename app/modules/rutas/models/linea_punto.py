@@ -10,9 +10,8 @@ class LineaPunto(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     linea_ruta_id: Mapped[int] = mapped_column(ForeignKey("lineas_rutas.id"), nullable=False)
     punto_id: Mapped[int] = mapped_column(ForeignKey("puntos.id"), nullable=False)
+    punto_destino_id: Mapped[int] = mapped_column(ForeignKey("puntos.id"),nullable=True)
     orden: Mapped[int] = mapped_column(Integer, nullable=False)
-    latitud: Mapped[float] = mapped_column(Float, nullable=False)
-    longitud: Mapped[float] = mapped_column(Float, nullable=False)
     distancia: Mapped[float] = mapped_column(Float, nullable=False)
     tiempo: Mapped[float] = mapped_column(Float, nullable=False)
 

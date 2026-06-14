@@ -8,3 +8,4 @@ class PuntoResponse(BaseModel):
     latitud: float
     longitud: float
     descripcion: str | None
+    stop: bool

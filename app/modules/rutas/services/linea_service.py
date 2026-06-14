@@ -46,13 +46,19 @@ def get_linea_detalle(linea_id: int, db: Session) -> LineaDetalleResponse | None
     for lr in lineas_rutas:
         result_puntos = db.execute(
             select(LineaPunto)
+            .options(joinedload(LineaPunto.punto))
             .where(LineaPunto.linea_ruta_id == lr.id)
             .order_by(LineaPunto.orden)
         )
-        puntos_db = result_puntos.scalars().all()
+        puntos_db = result_puntos.unique().scalars().all()
 
         puntos = [
-            PuntoRecorrido(orden=p.orden, lat=p.latitud, lng=p.longitud)
+            PuntoRecorrido(
+                punto_destino=p.punto_destino_id,
+                orden=p.orden,
+                lat=p.punto.latitud,
+                lng=p.punto.longitud,
+            )
             for p in puntos_db
         ]
 
@@ -62,7 +68,7 @@ def get_linea_detalle(linea_id: int, db: Session) -> LineaDetalleResponse | None
             RutaConPuntos(
                 id=lr.id,
                 tipo=tipo,
-                descripcion=lr.ruta.descripcion if lr.ruta else ("Salida" if tipo == "ida" else "Retorno"),
+                descripcion=lr.descripcion or (lr.ruta.descripcion if lr.ruta else ("Salida" if tipo == "ida" else "Retorno")),
                 distancia_km=lr.distancia,
                 tiempo_hr=lr.tiempo,
                 puntos=puntos,

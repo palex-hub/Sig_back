@@ -4,6 +4,7 @@ from app.modules.rutas.schemas.ruta import RutaConPuntos
 from app.modules.rutas.schemas.linea_ruta import LineaRutaResponse
 from app.modules.rutas.schemas.punto import PuntoResponse
 from app.modules.rutas.schemas.linea_punto import PuntoRecorrido
+from app.modules.rutas.schemas.trasbordo import TrasbordoResponse
 
 __all__ = [
     "ColorResponse",
@@ -13,4 +14,5 @@ __all__ = [
     "LineaRutaResponse",
     "PuntoResponse",
     "PuntoRecorrido",
+    "TrasbordoResponse",
 ]
