@@ -110,7 +110,7 @@ def seed_lineas_puntos(wb, db):
             id=int(row[0]),
             linea_ruta_id=int(row[1]),
             punto_id=int(row[2]),
-            punto_destino_id=int(row[3]) if row[3] is not None else None,
+            punto_destino_id=int(row[3]) if row[3] is not None and int(row[3]) > 0 else None,
             orden=int(row[4]),
             distancia=float(row[5]) if row[5] is not None else 0.0,
             tiempo=float(row[6]) if row[6] is not None else 0.0,
