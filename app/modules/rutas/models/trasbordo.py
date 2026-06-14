@@ -9,10 +9,10 @@ class Trasbordo(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
     punto_id: Mapped[int] = mapped_column(ForeignKey("puntos.id"), nullable=False)
-    linea_origen_id: Mapped[int] = mapped_column(ForeignKey("lineas.id"), nullable=False)
-    linea_destino_id: Mapped[int] = mapped_column(ForeignKey("lineas.id"), nullable=False)
+    linea_origen_id: Mapped[int] = mapped_column(ForeignKey("lineas_rutas.id"), nullable=False)
+    linea_destino_id: Mapped[int] = mapped_column(ForeignKey("lineas_rutas.id"), nullable=False)
     penalizacion_min: Mapped[float] = mapped_column(Float, nullable=False)
 
     punto: Mapped["Punto"] = relationship("Punto")
-    linea_origen: Mapped["Linea"] = relationship("Linea", foreign_keys=[linea_origen_id])
-    linea_destino: Mapped["Linea"] = relationship("Linea", foreign_keys=[linea_destino_id])
+    linea_origen: Mapped["LineaRuta"] = relationship("LineaRuta", foreign_keys=[linea_origen_id])
+    linea_destino: Mapped["LineaRuta"] = relationship("LineaRuta", foreign_keys=[linea_destino_id])
