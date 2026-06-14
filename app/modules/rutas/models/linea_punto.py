@@ -16,4 +16,4 @@ class LineaPunto(Base):
     tiempo: Mapped[float] = mapped_column(Float, nullable=False)
 
     linea_ruta: Mapped["LineaRuta"] = relationship("LineaRuta", back_populates="lineas_puntos")
-    punto: Mapped["Punto"] = relationship("Punto", back_populates="lineas_puntos")
+    punto: Mapped["Punto"] = relationship("Punto", back_populates="lineas_puntos", foreign_keys=[punto_id])

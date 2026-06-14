@@ -13,4 +13,6 @@ class Punto(Base):
     descripcion: Mapped[str] = mapped_column(String(100), nullable=True)
     stop: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    lineas_puntos: Mapped[list["LineaPunto"]] = relationship("LineaPunto", back_populates="punto")
+    lineas_puntos: Mapped[list["LineaPunto"]] = relationship(
+        "LineaPunto", back_populates="punto", foreign_keys="LineaPunto.punto_id"
+    )
