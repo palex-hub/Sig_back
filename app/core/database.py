@@ -8,7 +8,7 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_engine(DATABASE_URL, echo=DEBUG)
+engine = create_engine(DATABASE_URL, echo=DEBUG, pool_pre_ping=True, pool_recycle=300)
 SessionLocal = sessionmaker(engine, expire_on_commit=False)
 
 
