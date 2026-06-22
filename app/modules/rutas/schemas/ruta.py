@@ -10,5 +10,5 @@ class RutaConPuntos(BaseModel):
     tipo: str
     descripcion: str
     distancia_km: float
-    tiempo_hr: float
+    tiempo_min: float
     puntos: list[PuntoRecorrido]

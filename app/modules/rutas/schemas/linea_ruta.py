@@ -7,6 +7,5 @@ class LineaRutaResponse(BaseModel):
     id: int
     linea_id: int
     ruta_id: int
-    descripcion: str | None
     distancia: float
     tiempo: float

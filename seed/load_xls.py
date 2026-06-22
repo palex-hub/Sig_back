@@ -90,7 +90,6 @@ def seed_lineas_rutas(wb, db):
             id=int(row[0]),
             linea_id=int(row[1]),
             ruta_id=int(row[2]),
-            descripcion=str(row[3]).strip() if row[3] else None,
             distancia=float(row[4]) if row[4] is not None else 0.0,
             tiempo=float(row[5]) if row[5] is not None else 0.0,
         )

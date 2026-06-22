@@ -68,9 +68,9 @@ def get_linea_detalle(linea_id: int, db: Session) -> LineaDetalleResponse | None
             RutaConPuntos(
                 id=lr.id,
                 tipo=tipo,
-                descripcion=lr.descripcion or (lr.ruta.descripcion if lr.ruta else ("Salida" if tipo == "ida" else "Retorno")),
+                descripcion=lr.ruta.descripcion if lr.ruta else ("Salida" if tipo == "ida" else "Retorno"),
                 distancia_km=lr.distancia,
-                tiempo_hr=lr.tiempo,
+                tiempo_min=lr.tiempo,
                 puntos=puntos,
             )
         )
