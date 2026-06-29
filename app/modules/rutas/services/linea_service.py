@@ -56,6 +56,7 @@ def get_linea_detalle(linea_id: int, db: Session) -> LineaDetalleResponse | None
             PuntoRecorrido(
                 punto_destino=p.punto_destino_id,
                 orden=p.orden,
+                stop=p.punto.stop,
                 lat=p.punto.latitud,
                 lng=p.punto.longitud,
             )
