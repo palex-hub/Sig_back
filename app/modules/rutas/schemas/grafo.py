@@ -15,6 +15,7 @@ class SegmentoGrafo(BaseModel):
     linea_ruta_id: int
     orden: int
     tiempo: float
+    tiempo_ml: float | None = None
     distancia: float
 
 
