@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
 from app.modules.rutas.routers.lineas import router as lineas_router
+from app.modules.micros.router import router as micros_router
 
 api_router = APIRouter()
 api_router.include_router(lineas_router, prefix="/lineas", tags=["Líneas"])
+api_router.include_router(micros_router, prefix="/micros", tags=["Micros"])
